@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+    ports:
+      - 3306:3306
