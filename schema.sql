@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS `histories`;
 CREATE TABLE `users` (
   `id` int(11) primary key auto_increment,
   `name` varchar(100) not null,
+  `password` varchar(100) not null,
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
 

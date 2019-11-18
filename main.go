@@ -8,12 +8,19 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type user struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
+	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type userCreateForm struct {
+	Name     string `json:"name" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type task struct {
@@ -44,13 +51,23 @@ func setupRouter() *gin.Engine {
 	})
 
 	r.POST("/user/create", func(c *gin.Context) {
-		name := c.PostForm("name")
-		password := c.PostForm("password")
+		var json userCreateForm
+		if err := c.ShouldBindJSON(&json); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		name := json.Name
+		hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		password := string(hash)
 		fmt.Printf("%s / %s\n", name, password)
 		db := connect()
 		defer db.Close()
 		tx := db.Begin()
-		user := user{Name: name, CreatedAt: time.Now()}
+		user := user{Name: name, Password: password, CreatedAt: time.Now()}
 		tx.Create(&user)
 		tx.Commit()
 
