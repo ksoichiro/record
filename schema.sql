@@ -1,14 +1,14 @@
-DROP TABLE IF EXISTS `user`;
-DROP TABLE IF EXISTS `task`;
-DROP TABLE IF EXISTS `history`;
+DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `tasks`;
+DROP TABLE IF EXISTS `histories`;
 
-CREATE TABLE `user` (
+CREATE TABLE `users` (
   `id` int(11) primary key auto_increment,
   `name` varchar(100) not null,
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE `task` (
+CREATE TABLE `tasks` (
   `id` int(11) primary key auto_increment,
   `user_id` int(11) not null,
   `title` varchar(200) not null,
@@ -19,7 +19,7 @@ CREATE TABLE `task` (
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE `history` (
+CREATE TABLE `histories` (
   `id` int(11) primary key auto_increment,
   `user_id` int(11) not null,
   `task_id` int(11) not null,

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 )
 
 type task struct {
@@ -14,26 +14,23 @@ type task struct {
 	Title string
 }
 
+func connect() *gorm.DB {
+	db, err := gorm.Open("mysql", "app:app@tcp(127.0.0.1:3306)/test")
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
+}
+
 func setupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/ping", func(c *gin.Context) {
-		db, err := sql.Open("mysql", "app:app@tcp(127.0.0.1:3306)/test")
-		if err != nil {
-			fmt.Printf("%v\n", err)
-		}
+		db := connect()
 		defer db.Close()
-		rows, err := db.Query("SELECT id, title FROM task")
-		if err != nil {
-			fmt.Printf("%v\n", err)
-			c.String(http.StatusInternalServerError, "failed")
-			return
-		}
-		for rows.Next() {
-			task := task{}
-			err = rows.Scan(&task.ID, &task.Title)
-			fmt.Printf("%d: %s\n", task.ID, task.Title)
-		}
+		task := task{}
+		db.First(&task)
+		fmt.Printf("%d: %s\n", task.ID, task.Title)
 
 		c.String(http.StatusOK, "pong")
 	})
