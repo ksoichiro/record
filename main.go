@@ -50,39 +50,45 @@ func setupRouter() *gin.Engine {
 		c.String(http.StatusOK, "pong")
 	})
 
-	r.POST("/user/create", func(c *gin.Context) {
-		var json userCreateForm
-		if err := c.ShouldBindJSON(&json); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-		name := json.Name
-		hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		password := string(hash)
-		fmt.Printf("%s / %s\n", name, password)
-		db := connect()
-		defer db.Close()
-		tx := db.Begin()
-		user := user{Name: name, Password: password, CreatedAt: time.Now()}
-		tx.Create(&user)
-		tx.Commit()
+	userGroup := r.Group("/user")
+	userGroup.POST("/create", userCreate)
 
-		c.JSON(http.StatusOK, gin.H{"message": "created"})
-	})
-
-	r.GET("/admin/user", func(c *gin.Context) {
-		db := connect()
-		defer db.Close()
-		users := []user{}
-		db.Find(&users)
-		c.JSON(http.StatusOK, gin.H{"users": users})
-	})
+	adminGroup := r.Group("/admin")
+	adminGroup.GET("/user", adminUser)
 
 	return r
+}
+
+func userCreate(c *gin.Context) {
+	var json userCreateForm
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	name := json.Name
+	hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	password := string(hash)
+	fmt.Printf("%s / %s\n", name, password)
+	db := connect()
+	defer db.Close()
+	tx := db.Begin()
+	user := user{Name: name, Password: password, CreatedAt: time.Now()}
+	tx.Create(&user)
+	tx.Commit()
+
+	c.JSON(http.StatusOK, gin.H{"message": "created"})
+}
+
+func adminUser(c *gin.Context) {
+	db := connect()
+	defer db.Close()
+	users := []user{}
+	db.Find(&users)
+	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 func main() {
