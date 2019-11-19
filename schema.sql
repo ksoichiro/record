@@ -8,6 +8,7 @@ CREATE TABLE `users` (
   `password` varchar(100) not null,
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
+ALTER TABLE `users` ADD UNIQUE `uq_users` (`name`);
 
 CREATE TABLE `tasks` (
   `id` int(11) primary key auto_increment,

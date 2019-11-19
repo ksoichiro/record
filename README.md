@@ -18,3 +18,15 @@ docker-compose exec db bash -c "mysql -uroot -p test"
 ```sh
 go run main.go
 ```
+
+## RSA Keys
+
+```sh
+$ ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key -C "user@localhost"
+Generating public/private rsa key pair.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+:
+$ ssh-keygen -f jwtRS256.key.pub -e -m pkcs8 > jwtRS256.key.pub.pkcs8
+$ chmod 0600 jwtRS256.key*
+```
