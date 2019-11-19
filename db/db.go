@@ -16,6 +16,10 @@ func Init() {
 	}
 }
 
+func SetDB(alternative *gorm.DB) {
+	db = alternative
+}
+
 func GetDB() *gorm.DB {
 	return db
 }
