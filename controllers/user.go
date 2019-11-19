@@ -21,19 +21,11 @@ func (u UserController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	name := json.Name
-	hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
+	_, err := models.NewUser(json)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	password := string(hash)
-	db := db.GetDB()
-	tx := db.Begin()
-	user := models.User{Name: name, Password: password, CreatedAt: time.Now()}
-	tx.Create(&user)
-	tx.Commit()
-
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
 
