@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -29,7 +28,6 @@ func (u UserController) Create(c *gin.Context) {
 		return
 	}
 	password := string(hash)
-	fmt.Printf("%s / %s\n", name, password)
 	db := db.GetDB()
 	tx := db.Begin()
 	user := models.User{Name: name, Password: password, CreatedAt: time.Now()}
