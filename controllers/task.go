@@ -8,6 +8,6 @@ import (
 
 type TaskController struct{}
 
-func (t TaskController) TaskCreate(c *gin.Context) {
+func (t TaskController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }

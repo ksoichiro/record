@@ -16,7 +16,7 @@ import (
 
 type UserController struct{}
 
-func (u UserController) UserCreate(c *gin.Context) {
+func (u UserController) Create(c *gin.Context) {
 	var json forms.UserCreateForm
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -39,7 +39,7 @@ func (u UserController) UserCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
 
-func (u UserController) UserLogin(c *gin.Context) {
+func (u UserController) Login(c *gin.Context) {
 	var json forms.UserLoginForm
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
