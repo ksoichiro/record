@@ -81,7 +81,13 @@ func (t TaskController) Update(c *gin.Context) {
 	var user models.User
 	tx.Where("id = ?", userID).Find(&user)
 	var task models.Task
-	tx.Where("id = ?", *json.ID).First(&task)
+	var count int
+	tx.Where("id = ? and user_id = ?", *json.ID, userID).First(&task).Count(&count)
+	if count == 0 {
+		tx.Rollback()
+		c.JSON(http.StatusOK, gin.H{"error": "task not found"})
+		return
+	}
 	if json.Title != nil {
 		task.Title = *json.Title
 	}

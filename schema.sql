@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `tasks`;
-DROP TABLE IF EXISTS `histories`;
+DROP TABLE IF EXISTS `records`;
 
 CREATE TABLE `users` (
   `id` int(11) primary key auto_increment,
@@ -21,10 +21,12 @@ CREATE TABLE `tasks` (
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE `histories` (
+CREATE TABLE `records` (
   `id` int(11) primary key auto_increment,
   `user_id` int(11) not null,
+  `target_date` datetime not null,
   `task_id` int(11) not null,
   `amount` int(11),
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;
+ALTER TABLE `records` ADD UNIQUE `uq_records` (`user_id`, `target_date`, `task_id`);
