@@ -34,7 +34,7 @@ func TestUserCreateSuccessfully(t *testing.T) {
 		strings.NewReader(`{"name":"foo","password":"test"}`))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, `{"message":"created"}`, w.Body.String())
+	assert.Equal(t, `{"message":"created"}`, strings.TrimRight(w.Body.String(), "\n"))
 }
 
 func TestUserCreateValidationError(t *testing.T) {
@@ -48,5 +48,5 @@ func TestUserCreateValidationError(t *testing.T) {
 		strings.NewReader(`{"name":"foo","password":""}`))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 400, w.Code)
-	assert.Equal(t, `{"error":"Key: 'UserCreateForm.Password' Error:Field validation for 'Password' failed on the 'required' tag"}`, w.Body.String())
+	assert.Equal(t, `{"error":"Key: 'UserCreateForm.Password' Error:Field validation for 'Password' failed on the 'required' tag"}`, strings.TrimRight(w.Body.String(), "\n"))
 }
