@@ -35,11 +35,13 @@ func UserAuthenticator() gin.HandlerFunc {
 			}
 			return verifyKey, nil
 		})
-		if err != nil || !token.Valid {
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if err != nil || !ok || !token.Valid {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
+		c.Set("user", claims["sub"])
 		c.Next()
 	}
 }

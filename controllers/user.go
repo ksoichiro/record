@@ -71,6 +71,7 @@ func (u UserController) Login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"iss": "https://idp.example.com",
 		"aud": "https://api.example.com",
+		"sub": user.ID,
 		"nbf": time.Now().UTC().Unix(),
 		"exp": time.Now().UTC().Add(24 * time.Hour).Unix(),
 	})

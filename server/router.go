@@ -38,6 +38,7 @@ func NewRouter() *gin.Engine {
 	taskGroup := r.Group("/task")
 	taskGroup.Use(middlewares.UserAuthenticator())
 	task := new(controllers.TaskController)
+	taskGroup.GET("", task.List)
 	taskGroup.POST("/create", task.Create)
 
 	adminGroup := r.Group("/admin")
