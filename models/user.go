@@ -15,7 +15,7 @@ type User struct {
 	CreatedAt time.Time `json:"created_at" gorm:"not null"`
 }
 
-func NewUser(json forms.UserCreateForm) (*User, error) {
+func NewUser(json *forms.UserCreateForm) (*User, error) {
 	name := json.Name
 	hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
 	if err != nil {
