@@ -13,15 +13,24 @@ import (
 // RecordController handles requests about records.
 type RecordController struct{}
 
+type recordParam struct {
+	Date string `uri:"date" binding:"required"`
+}
+
 // List returns the records of the user.
 func (r RecordController) List(c *gin.Context) {
-	d := c.Param("date")
+	var recordParam recordParam
+	if err := c.ShouldBindUri(&recordParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	d := recordParam.Date
 	dateExpr := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2}`)
 	if !dateExpr.MatchString(d) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date"})
 		return
 	}
-	targetDate, _ := time.Parse("2019/04/20", d)
+	targetDate, _ := time.Parse("2006-01-02", d)
 	userID, exists := c.Get("user")
 	if !exists {
 		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
