@@ -1,6 +1,12 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/ksoichiro/record/db"
+	"github.com/ksoichiro/record/forms"
+)
 
 type Record struct {
 	ID         int       `json:"id" gorm:"primary_key;auto_increment"`
@@ -11,4 +17,41 @@ type Record struct {
 	Task       Task      `json:"-"`
 	Amount     int       `json:"amount"`
 	CreatedAt  time.Time `json:"created_at" gorm:"not null"`
+}
+
+func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) (*Record, error) {
+	targetDate, err := time.Parse("2006-01-02", targetDateExpr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse date")
+	}
+	db := db.GetDB()
+	tx := db.Begin()
+	var user User
+	tx.Where("id = ?", userID).Find(&user)
+	var task Task
+	var count int
+	tx.Where("id = ? and user_id = ?", *json.TaskID, userID).First(&task).Count(&count)
+	if count == 0 {
+		tx.Rollback()
+		return nil, fmt.Errorf("task not found")
+	}
+	tx.Model(&Record{}).Where("user_id = ? and target_date = ? and task_id = ?", userID, targetDate, json.TaskID).Count(&count)
+	if 0 < count {
+		tx.Rollback()
+		return nil, fmt.Errorf("already created")
+	}
+	record := Record{
+		User:       user,
+		TargetDate: targetDate,
+		Task:       task,
+		CreatedAt:  time.Now(),
+	}
+	if json.Amount == nil {
+		record.Amount = 0
+	} else {
+		record.Amount = *json.Amount
+	}
+	tx.Create(&record)
+	tx.Commit()
+	return &record, nil
 }
