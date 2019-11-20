@@ -3,6 +3,8 @@ language: go
 go:
   - 1.12
 
+install:
+  - make install
+
 script:
-  - go vet
-  - go test ./...
+  - make test
