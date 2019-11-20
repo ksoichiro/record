@@ -42,7 +42,12 @@ func (r RecordController) List(c *gin.Context) {
 
 // Create creates a new record of a task for the user.
 func (r RecordController) Create(c *gin.Context) {
-	d := c.Param("date")
+	var recordParam recordParam
+	if err := c.ShouldBindUri(&recordParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	d := recordParam.Date
 	dateExpr := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2}`)
 	if !dateExpr.MatchString(d) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date"})
