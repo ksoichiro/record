@@ -16,6 +16,14 @@ func Init() {
 	}
 }
 
+func InitForTest() {
+	testDB, err := gorm.Open("sqlite3", ":memory:")
+	if err != nil {
+		panic(err)
+	}
+	SetDB(testDB)
+}
+
 func SetDB(alternative *gorm.DB) {
 	db = alternative
 }
