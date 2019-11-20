@@ -20,7 +20,7 @@ var (
 // are authenticated with Authorization header.
 func UserAuthenticator() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		verifyBytes, err := ioutil.ReadFile("./jwtRS256.key.pub.pkcs8")
+		verifyBytes, err := ioutil.ReadFile("../jwtRS256.key.pub.pkcs8")
 		if err != nil {
 			panic(err)
 		}

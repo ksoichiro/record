@@ -50,7 +50,7 @@ func (u UserController) Login(c *gin.Context) {
 		return
 	}
 
-	signBytes, err := ioutil.ReadFile("./jwtRS256.key")
+	signBytes, err := ioutil.ReadFile("../jwtRS256.key")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
