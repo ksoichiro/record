@@ -1,5 +1,6 @@
 package forms
 
+// TaskCreateForm is a form for the creation of a task.
 type TaskCreateForm struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
@@ -8,6 +9,7 @@ type TaskCreateForm struct {
 	Amount      *int   `json:"amount"`
 }
 
+// TaskUpdateForm is a form for the update of the task.
 type TaskUpdateForm struct {
 	ID          *int    `json:"id" binding:"exists"`
 	Title       *string `json:"title"`

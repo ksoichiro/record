@@ -7,6 +7,7 @@ import (
 	"github.com/ksoichiro/record/forms"
 )
 
+// Task represents a task that may be repeatedly executed by someone.
 type Task struct {
 	ID          int       `json:"id"`
 	UserID      int       `json:"-" gorm:"not null"`
@@ -19,6 +20,7 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at" gorm:"not null"`
 }
 
+// NewTask creates a new task and persist it to the database.
 func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
 	db := db.GetDB()
 	tx := db.Begin()

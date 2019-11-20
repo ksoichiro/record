@@ -8,6 +8,7 @@ import (
 	"github.com/ksoichiro/record/forms"
 )
 
+// Record represents daily record of a task.
 type Record struct {
 	ID         int       `json:"id" gorm:"primary_key;auto_increment"`
 	UserID     int       `json:"-" gorm:"not null"`
@@ -19,6 +20,7 @@ type Record struct {
 	CreatedAt  time.Time `json:"created_at" gorm:"not null"`
 }
 
+// NewRecord creates a new record object and persist it to the database.
 func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) (*Record, error) {
 	targetDate, err := time.Parse("2006-01-02", targetDateExpr)
 	if err != nil {
@@ -56,6 +58,7 @@ func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) 
 	return &record, nil
 }
 
+// ListRecords gets the records by user ID and the specified date.
 func ListRecords(userID int, targetDate time.Time) []Record {
 	db := db.GetDB()
 	records := []Record{}

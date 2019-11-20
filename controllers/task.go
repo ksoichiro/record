@@ -9,8 +9,10 @@ import (
 	"github.com/ksoichiro/record/models"
 )
 
+// TaskController handles requests about tasks.
 type TaskController struct{}
 
+// List returns the tasks of the user.
 func (t TaskController) List(c *gin.Context) {
 	db := db.GetDB()
 	userID, exists := c.Get("user")
@@ -23,6 +25,7 @@ func (t TaskController) List(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
 }
 
+// Create creates a new task for the user.
 func (t TaskController) Create(c *gin.Context) {
 	var json forms.TaskCreateForm
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -38,6 +41,7 @@ func (t TaskController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
 
+// Update updates the user's task.
 func (t TaskController) Update(c *gin.Context) {
 	var json forms.TaskUpdateForm
 	if err := c.ShouldBindJSON(&json); err != nil {

@@ -10,8 +10,10 @@ import (
 	"github.com/ksoichiro/record/models"
 )
 
+// RecordController handles requests about records.
 type RecordController struct{}
 
+// List returns the records of the user.
 func (r RecordController) List(c *gin.Context) {
 	d := c.Param("date")
 	dateExpr := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2}`)
@@ -29,6 +31,7 @@ func (r RecordController) List(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"records": &records})
 }
 
+// Create creates a new record of a task for the user.
 func (r RecordController) Create(c *gin.Context) {
 	d := c.Param("date")
 	dateExpr := regexp.MustCompile(`[0-9]{4}-[0-9]{2}-[0-9]{2}`)

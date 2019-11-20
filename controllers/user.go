@@ -13,8 +13,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// UserController handles requests about users.
 type UserController struct{}
 
+// Create creates a new user.
 func (u UserController) Create(c *gin.Context) {
 	var json forms.UserCreateForm
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -29,6 +31,7 @@ func (u UserController) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
 
+// Login authenticates the user and returns a authentication token.
 func (u UserController) Login(c *gin.Context) {
 	var json forms.UserLoginForm
 	if err := c.ShouldBindJSON(&json); err != nil {
