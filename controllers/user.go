@@ -14,7 +14,9 @@ import (
 )
 
 // UserController handles requests about users.
-type UserController struct{}
+type UserController struct {
+	ResourcePath string
+}
 
 // Create creates a new user.
 func (u UserController) Create(c *gin.Context) {
@@ -50,7 +52,10 @@ func (u UserController) Login(c *gin.Context) {
 		return
 	}
 
-	signBytes, err := ioutil.ReadFile("../jwtRS256.key")
+	if u.ResourcePath == "" {
+		u.ResourcePath = "."
+	}
+	signBytes, err := ioutil.ReadFile(u.ResourcePath + "/jwtRS256.key")
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

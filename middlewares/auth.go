@@ -12,15 +12,19 @@ import (
 )
 
 var (
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
+	verifyKey    *rsa.PublicKey
+	signKey      *rsa.PrivateKey
+	resourcePath string
 )
 
 // UserAuthenticator is a middleware to validate that the requests
 // are authenticated with Authorization header.
 func UserAuthenticator() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		verifyBytes, err := ioutil.ReadFile("../jwtRS256.key.pub.pkcs8")
+		if resourcePath == "" {
+			resourcePath = "."
+		}
+		verifyBytes, err := ioutil.ReadFile(resourcePath + "/jwtRS256.key.pub.pkcs8")
 		if err != nil {
 			panic(err)
 		}

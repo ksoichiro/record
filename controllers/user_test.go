@@ -50,6 +50,7 @@ func TestUserCreateValidationError(t *testing.T) {
 func TestUserLogin(t *testing.T) {
 	router := gin.Default()
 	c := new(UserController)
+	c.ResourcePath = ".."
 	router.POST("/login", c.Login)
 	gin.SetMode(gin.TestMode)
 	db.InitForTest()
