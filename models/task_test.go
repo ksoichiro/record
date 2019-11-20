@@ -16,17 +16,17 @@ func TestNewTask(t *testing.T) {
 	db.InitForTest()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{})
-	db.Create(&User{ID: 1, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
+	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
 	form := forms.TaskCreateForm{
 		Title: "important task",
 	}
-	userID := 1
+	userID := 100
 	task, err := NewTask(&form, userID)
 	assert.Nil(t, err)
 	assert.Equal(t, "important task", task.Title)
 	var tasks []Task
 	var count int
-	db.Where("user_id = 1").Find(&tasks).Count(&count)
+	db.Where("user_id = 100").Find(&tasks).Count(&count)
 	assert.Equal(t, 1, count)
 	assert.Equal(t, 1, tasks[0].ID)
 	assert.Equal(t, "important task", tasks[0].Title)

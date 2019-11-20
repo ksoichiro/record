@@ -31,7 +31,7 @@ func (t TaskController) Create(c *gin.Context) {
 	}
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
 	models.NewTask(&json, userID.(int))
