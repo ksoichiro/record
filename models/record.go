@@ -55,3 +55,10 @@ func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) 
 	tx.Commit()
 	return &record, nil
 }
+
+func ListRecords(userID int, targetDate time.Time) []Record {
+	db := db.GetDB()
+	records := []Record{}
+	db.Where("user_id = ? and target_date = ?", userID, targetDate).Find(&records)
+	return records
+}

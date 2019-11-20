@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	"github.com/ksoichiro/record/models"
 )
@@ -26,9 +25,7 @@ func (r RecordController) List(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
 		return
 	}
-	db := db.GetDB()
-	records := []models.Record{}
-	db.Where("user_id = ? and target_date = ?", userID, targetDate).Find(&records)
+	records := models.ListRecords(userID.(int), targetDate)
 	c.JSON(http.StatusOK, gin.H{"records": &records})
 }
 
