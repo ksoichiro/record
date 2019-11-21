@@ -37,6 +37,31 @@ func TestNewRecord(t *testing.T) {
 	assert.Equal(t, "2019-11-20", records[0].TargetDate.Format("2006-01-02"))
 }
 
+func TestNewRecordFailsDueToInvalidDate(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	form := forms.RecordCreateForm{TaskID: new(int)}
+	*form.TaskID = 200
+	userID := 100
+	targetDateExpr := "2019.11.20"
+	_, err := NewRecord(&form, userID, targetDateExpr)
+	assert.Equal(t, "failed to parse date", err.Error())
+}
+
+func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db.InitForTest()
+	db := db.GetDB()
+	db.AutoMigrate(&User{}, &Task{}, &Record{})
+	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 200, UserID: 101, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	form := forms.RecordCreateForm{TaskID: new(int)}
+	*form.TaskID = 200
+	userID := 100
+	targetDateExpr := "2019-11-20"
+	_, err := NewRecord(&form, userID, targetDateExpr)
+	assert.Equal(t, "task not found", err.Error())
+}
+
 func TestListRecords(t *testing.T) {
 	db.InitForTest()
 	db := db.GetDB()
