@@ -33,7 +33,7 @@ func (r RecordController) List(c *gin.Context) {
 	targetDate, _ := time.Parse("2006-01-02", d)
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
 	records := models.ListRecords(userID.(int), targetDate)

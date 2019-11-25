@@ -108,6 +108,39 @@ func TestRecordListValidationError(t *testing.T) {
 	assert.Equal(t, 400, w.Code, w.Body.String())
 }
 
+func TestRecordListValidationErrorInvalidDateFormat(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	db.InitForTest()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	router.GET("/:date", c.List)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/100", nil)
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Code, w.Body.String())
+	assert.Equal(t, `{"error":"invalid date"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
+func TestRecordListValidationErrorUserNotFound(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	db.InitForTest()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	router.GET("/:date", c.List)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/2019-11-20", nil)
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 403, w.Code, w.Body.String())
+	assert.Equal(t, `{"error":"user not found"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
 func mustParse(layout string, value string) time.Time {
 	t, err := time.Parse(layout, value)
 	if err != nil {
