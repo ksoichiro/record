@@ -56,6 +56,24 @@ func TestRecordCreateValidationError(t *testing.T) {
 	assert.Equal(t, `{"error":"Key: 'RecordCreateForm.TaskID' Error:Field validation for 'TaskID' failed on the 'exists' tag"}`, strings.TrimRight(w.Body.String(), "\n"))
 }
 
+func TestRecordListValidationErrorForURI(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	db.InitForTest()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	// This error won't happen, since the parameter and routing is defined in the router.
+	router.POST("/", c.Create)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/", nil)
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Code, w.Body.String())
+}
+
 func TestRecordList(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
