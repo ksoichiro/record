@@ -29,7 +29,7 @@ func TestUserAuthenticator(t *testing.T) {
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/", nil)
 
-	signBytes, err := ioutil.ReadFile("../jwtRS256.key")
+	signBytes, err := ioutil.ReadFile(config.GetConfig().GetString("auth.keys.private"))
 	if err != nil {
 		panic(err)
 	}
