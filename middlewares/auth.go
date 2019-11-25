@@ -40,7 +40,7 @@ func UserAuthenticator() gin.HandlerFunc {
 		})
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if err != nil || !ok || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			c.Abort()
 			return
 		}

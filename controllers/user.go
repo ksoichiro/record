@@ -48,7 +48,7 @@ func (u UserController) Login(c *gin.Context) {
 	db.Where("name = ?", name).First(&user)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(json.Password))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid name or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid name or password"})
 		return
 	}
 
