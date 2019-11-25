@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	_ "github.com/mattn/go-sqlite3"
@@ -13,7 +14,8 @@ import (
 
 func TestNewUser(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{})
 	form := forms.UserCreateForm{

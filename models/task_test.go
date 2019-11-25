@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	_ "github.com/mattn/go-sqlite3"
@@ -13,7 +14,8 @@ import (
 
 func TestNewTask(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})

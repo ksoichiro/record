@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/models"
 	_ "github.com/mattn/go-sqlite3"
@@ -20,7 +21,8 @@ func TestUserCreateSuccessfully(t *testing.T) {
 	c := new(UserController)
 	router.POST("/create", c.Create)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{})
 	w := httptest.NewRecorder()
@@ -36,7 +38,8 @@ func TestUserCreateValidationError(t *testing.T) {
 	c := new(UserController)
 	router.POST("/create", c.Create)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{})
 	w := httptest.NewRecorder()
@@ -50,10 +53,10 @@ func TestUserCreateValidationError(t *testing.T) {
 func TestUserLogin(t *testing.T) {
 	router := gin.Default()
 	c := new(UserController)
-	c.ResourcePath = ".."
 	router.POST("/login", c.Login)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})

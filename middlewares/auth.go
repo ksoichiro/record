@@ -9,22 +9,19 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 )
 
 var (
-	verifyKey    *rsa.PublicKey
-	signKey      *rsa.PrivateKey
-	resourcePath string
+	verifyKey *rsa.PublicKey
+	signKey   *rsa.PrivateKey
 )
 
 // UserAuthenticator is a middleware to validate that the requests
 // are authenticated with Authorization header.
 func UserAuthenticator() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if resourcePath == "" {
-			resourcePath = "."
-		}
-		verifyBytes, err := ioutil.ReadFile(resourcePath + "/jwtRS256.key.pub.pkcs8")
+		verifyBytes, err := ioutil.ReadFile(config.GetConfig().GetString("auth.keys.public"))
 		if err != nil {
 			panic(err)
 		}

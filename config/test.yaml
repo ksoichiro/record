@@ -1,0 +1,9 @@
+database:
+  dialect: sqlite3
+  url: ':memory:'
+server:
+  port: 8080
+auth:
+  keys:
+    private: ../jwtRS256.key
+    public: ../jwtRS256.key.pub.pkcs8

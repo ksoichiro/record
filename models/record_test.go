@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	_ "github.com/mattn/go-sqlite3"
@@ -13,7 +14,8 @@ import (
 
 func TestNewRecord(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -49,7 +51,8 @@ func TestNewRecordFailsDueToInvalidDate(t *testing.T) {
 
 func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -64,7 +67,8 @@ func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
 
 func TestNewRecordFailsWhenAlreadyCreated(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -80,7 +84,8 @@ func TestNewRecordFailsWhenAlreadyCreated(t *testing.T) {
 }
 
 func TestListRecords(t *testing.T) {
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})

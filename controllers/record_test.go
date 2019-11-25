@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/models"
 	_ "github.com/mattn/go-sqlite3"
@@ -19,7 +20,8 @@ func TestRecordCreateSuccessfully(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -42,7 +44,8 @@ func TestRecordCreateValidationError(t *testing.T) {
 	c := new(RecordController)
 	router.POST("/:date/create", c.Create)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -60,7 +63,8 @@ func TestRecordListValidationErrorForURI(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	router.Use(func(c *gin.Context) {
@@ -78,7 +82,8 @@ func TestRecordList(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
@@ -112,7 +117,8 @@ func TestRecordListValidationError(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	router.Use(func(c *gin.Context) {
@@ -130,7 +136,8 @@ func TestRecordListValidationErrorInvalidDateFormat(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	router.Use(func(c *gin.Context) {
@@ -148,7 +155,8 @@ func TestRecordListValidationErrorUserNotFound(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
 	router.GET("/:date", c.List)

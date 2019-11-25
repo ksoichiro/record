@@ -7,6 +7,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	"github.com/ksoichiro/record/models"
@@ -15,7 +16,6 @@ import (
 
 // UserController handles requests about users.
 type UserController struct {
-	ResourcePath string
 }
 
 // Create creates a new user.
@@ -52,10 +52,7 @@ func (u UserController) Login(c *gin.Context) {
 		return
 	}
 
-	if u.ResourcePath == "" {
-		u.ResourcePath = "."
-	}
-	signBytes, err := ioutil.ReadFile(u.ResourcePath + "/jwtRS256.key")
+	signBytes, err := ioutil.ReadFile(config.GetConfig().GetString("auth.keys.private"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

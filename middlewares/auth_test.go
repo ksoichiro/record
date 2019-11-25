@@ -9,6 +9,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/models"
 	_ "github.com/mattn/go-sqlite3"
@@ -18,11 +19,11 @@ import (
 func TestUserAuthenticator(t *testing.T) {
 	router := gin.Default()
 	gin.SetMode(gin.TestMode)
-	db.InitForTest()
+	config.Init("test")
+	db.Init()
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	resourcePath = ".."
 	router.Use(UserAuthenticator())
 	router.GET("/", func(c *gin.Context) {})
 	w := httptest.NewRecorder()
