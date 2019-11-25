@@ -90,6 +90,24 @@ func TestRecordList(t *testing.T) {
 	assert.Equal(t, 304, created.Records[1].ID)
 }
 
+func TestRecordListValidationError(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	db.InitForTest()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	// This error won't happen, since the parameter and routing is defined in the router.
+	router.GET("/", c.List)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/", nil)
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Code, w.Body.String())
+}
+
 func mustParse(layout string, value string) time.Time {
 	t, err := time.Parse(layout, value)
 	if err != nil {
