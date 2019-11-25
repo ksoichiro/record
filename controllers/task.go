@@ -17,7 +17,7 @@ func (t TaskController) List(c *gin.Context) {
 	db := db.GetDB()
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
 	tasks := []models.Task{}
@@ -34,7 +34,7 @@ func (t TaskController) Create(c *gin.Context) {
 	}
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
 	models.NewTask(&json, userID.(int))
@@ -51,7 +51,7 @@ func (t TaskController) Update(c *gin.Context) {
 	db := db.GetDB()
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
 	tx := db.Begin()

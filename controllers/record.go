@@ -60,7 +60,7 @@ func (r RecordController) Create(c *gin.Context) {
 	}
 	userID, exists := c.Get("user")
 	if !exists {
-		c.JSON(http.StatusOK, gin.H{"error": "user not found"})
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
 	if _, err := models.NewRecord(&json, userID.(int), d); err != nil {
