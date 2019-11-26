@@ -59,6 +59,103 @@ func TestRecordCreateValidationError(t *testing.T) {
 	assert.Equal(t, `{"error":"Key: 'RecordCreateForm.TaskID' Error:Field validation for 'TaskID' failed on the 'exists' tag"}`, strings.TrimRight(w.Body.String(), "\n"))
 }
 
+func TestRecordUpdateSuccessfully(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
+	db.Create(&models.Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&models.Record{ID: 300, UserID: 100, TargetDate: mustParse("2006-01-02", "2019-11-19"), TaskID: 200, CreatedAt: time.Now()})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	router.POST("/update", c.Update)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/update", strings.NewReader(`{"id":300,"done":true}`))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 200, w.Code)
+	assert.Equal(t, `{"message":"updated"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
+func TestRecordUpdateValidationError(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	router.POST("/update", c.Update)
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/update", strings.NewReader(`{}`))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, `{"error":"Key: 'RecordUpdateForm.ID' Error:Field validation for 'ID' failed on the 'exists' tag"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
+func TestRecordUpdateValidationErrorUserNotFound(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	router.POST("/update", c.Update)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/update", strings.NewReader(`{"id":300,"done":true}`))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 403, w.Code, w.Body.String())
+	assert.Equal(t, `{"error":"user not found"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
+func TestRecordUpdateErrorRecordNotFound(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
+	db.Create(&models.Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	router.POST("/update", c.Update)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/update", strings.NewReader(`{"id":300,"done":true}`))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 500, w.Code, w.Body.String())
+	assert.Equal(t, `{"error":"record not found"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
+func TestRecordUpdateErrorRecordExistsButNotOwnedByUser(t *testing.T) {
+	router := gin.Default()
+	c := new(RecordController)
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&models.User{}, &models.Task{}, &models.Record{})
+	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
+	db.Create(&models.Task{ID: 200, UserID: 101, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&models.Record{ID: 300, UserID: 101, TargetDate: mustParse("2006-01-02", "2019-11-19"), TaskID: 200, CreatedAt: time.Now()})
+	router.Use(func(c *gin.Context) {
+		c.Set("user", 100)
+	})
+	router.POST("/update", c.Update)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/update", strings.NewReader(`{"id":300,"done":true}`))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 500, w.Code, w.Body.String())
+	assert.Equal(t, `{"error":"record not found"}`, strings.TrimRight(w.Body.String(), "\n"))
+}
+
 func TestRecordListValidationErrorForURI(t *testing.T) {
 	router := gin.Default()
 	c := new(RecordController)

@@ -6,3 +6,10 @@ type RecordCreateForm struct {
 	Done   *bool `json:"done"`
 	Amount *int  `json:"amount"`
 }
+
+// RecordUpdateForm is a form for the update of the record.
+type RecordUpdateForm struct {
+	ID     *int  `json:"id" binding:"exists"`
+	Done   *bool `json:"done"`
+	Amount *int  `json:"amount"`
+}

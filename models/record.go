@@ -67,3 +67,37 @@ func ListRecords(userID int, targetDate time.Time) []Record {
 	db.Where("user_id = ? and target_date = ?", userID, targetDate).Find(&records)
 	return records
 }
+
+// FindTask finds the record specified by ID and owned by the user.
+func FindRecord(id int, userID int) (*Record, error) {
+	db := db.GetDB()
+	var record Record
+	var count int
+	db.Where("id = ? and user_id = ?", id, userID).First(&record).Count(&count)
+	if count == 0 {
+		return nil, fmt.Errorf("record not found")
+	}
+	return &record, nil
+}
+
+// Update updates the existing record.
+func (r Record) Update(json *forms.RecordUpdateForm) error {
+	db := db.GetDB()
+	tx := db.Begin()
+	var record Record
+	var count int
+	tx.Where("id = ? and user_id = ?", r.ID, r.UserID).First(&record).Count(&count)
+	if count == 0 {
+		tx.Rollback()
+		return fmt.Errorf("record not found")
+	}
+	if json.Done != nil {
+		record.Done = *json.Done
+	}
+	if json.Amount != nil {
+		record.Amount = *json.Amount
+	}
+	tx.Save(&record)
+	tx.Commit()
+	return nil
+}

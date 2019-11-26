@@ -55,3 +55,28 @@ func (r RecordController) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
+
+// Update updates the user's record.
+func (t RecordController) Update(c *gin.Context) {
+	var json forms.RecordUpdateForm
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	userID, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
+		return
+	}
+	var record *models.Record
+	var err error
+	if record, err = models.FindRecord(*json.ID, userID.(int)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if err := record.Update(&json); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "updated"})
+}

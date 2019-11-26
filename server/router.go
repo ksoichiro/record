@@ -48,6 +48,7 @@ func NewRouter() *gin.Engine {
 	record := new(controllers.RecordController)
 	recordGroup.GET("/:date", record.List)
 	recordGroup.POST("/:date/create", record.Create)
+	recordGroup.POST("/:date/update", record.Update)
 
 	adminGroup := r.Group("/admin")
 	adminGroup.GET("/user", adminUser)
