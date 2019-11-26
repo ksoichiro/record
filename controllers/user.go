@@ -1,17 +1,11 @@
 package controllers
 
 import (
-	"io/ioutil"
 	"net/http"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"github.com/ksoichiro/record/config"
-	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	"github.com/ksoichiro/record/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // UserController handles requests about users.
@@ -40,36 +34,10 @@ func (u UserController) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	name := json.Name
-
-	db := db.GetDB()
-
-	user := models.User{}
-	db.Where("name = ?", name).First(&user)
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(json.Password))
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid name or password"})
-		return
-	}
-
-	signBytes, err := ioutil.ReadFile(config.GetConfig().GetString("auth.keys.private"))
+	token, err := models.Login(&json)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
-	if err != nil {
-		panic(err)
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-		"iss": "https://idp.example.com",
-		"aud": "https://api.example.com",
-		"sub": user.ID,
-		"nbf": time.Now().UTC().Unix(),
-		"exp": time.Now().UTC().Add(24 * time.Hour).Unix(),
-	})
-	tokenString, err := token.SignedString(signKey)
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }

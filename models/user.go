@@ -1,8 +1,12 @@
 package models
 
 import (
+	"fmt"
+	"io/ioutil"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
+	"github.com/ksoichiro/record/config"
 	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	"golang.org/x/crypto/bcrypt"
@@ -30,4 +34,37 @@ func NewUser(json *forms.UserCreateForm) (*User, error) {
 	tx.Create(&user)
 	tx.Commit()
 	return &user, nil
+}
+
+// Login authenticates the user with the credentials specified by the form.
+func Login(json *forms.UserLoginForm) (tokenString string, err error) {
+	tokenString = ""
+	db := db.GetDB()
+
+	user := User{}
+	db.Where("name = ?", json.Name).First(&user)
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(json.Password)); err != nil {
+		err = fmt.Errorf("invalid name or password")
+		return
+	}
+
+	signBytes, err := ioutil.ReadFile(config.GetConfig().GetString("auth.keys.private"))
+	if err != nil {
+		panic(err)
+	}
+
+	signKey, err := jwt.ParseRSAPrivateKeyFromPEM(signBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"iss": "https://idp.example.com",
+		"aud": "https://api.example.com",
+		"sub": user.ID,
+		"nbf": time.Now().UTC().Unix(),
+		"exp": time.Now().UTC().Add(24 * time.Hour).Unix(),
+	})
+	tokenString, err = token.SignedString(signKey)
+	return
 }
