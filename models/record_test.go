@@ -19,7 +19,7 @@ func TestNewRecord(t *testing.T) {
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
@@ -56,7 +56,7 @@ func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 200, UserID: 101, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 200, UserID: 101, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
@@ -72,7 +72,7 @@ func TestNewRecordFailsWhenAlreadyCreated(t *testing.T) {
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
@@ -89,9 +89,9 @@ func TestListRecords(t *testing.T) {
 	db := db.GetDB()
 	db.AutoMigrate(&User{}, &Task{}, &Record{})
 	db.Create(&User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 201, UserID: 101, Title: "task2", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
-	db.Create(&Task{ID: 202, UserID: 100, Title: "task3", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 201, UserID: 101, Title: "task2", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&Task{ID: 202, UserID: 100, Title: "task3", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
 	db.Create(&Record{ID: 300, UserID: 100, TargetDate: mustParse("2006-01-02", "2019-11-19"), TaskID: 200, CreatedAt: time.Now()})
 	db.Create(&Record{ID: 301, UserID: 100, TargetDate: mustParse("2006-01-02", "2019-11-20"), TaskID: 200, CreatedAt: time.Now()})
 	db.Create(&Record{ID: 302, UserID: 101, TargetDate: mustParse("2006-01-02", "2019-11-20"), TaskID: 201, CreatedAt: time.Now()})

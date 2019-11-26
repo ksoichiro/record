@@ -2,6 +2,7 @@ package forms
 
 // RecordCreateForm is a form for the creation of a record.
 type RecordCreateForm struct {
-	TaskID *int `json:"task_id" binding:"exists"`
-	Amount *int `json:"amount"`
+	TaskID *int  `json:"task_id" binding:"exists"`
+	Done   *bool `json:"done"`
+	Amount *int  `json:"amount"`
 }

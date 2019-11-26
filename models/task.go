@@ -14,7 +14,6 @@ type Task struct {
 	User        User      `json:"-"`
 	Title       string    `json:"title" gorm:"size:200;not null"`
 	Description string    `json:"description"`
-	Done        bool      `json:"done" gorm:"not null;default 0"`
 	Type        int       `json:"type" gorm:"not null"`
 	Amount      int       `json:"amount"`
 	CreatedAt   time.Time `json:"created_at" gorm:"not null"`
@@ -31,11 +30,6 @@ func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
 		Title:       json.Title,
 		Description: json.Description,
 		CreatedAt:   time.Now(),
-	}
-	if json.Done == nil {
-		task.Done = false
-	} else {
-		task.Done = *json.Done
 	}
 	if json.Type == nil {
 		task.Type = 0

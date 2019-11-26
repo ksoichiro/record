@@ -15,7 +15,6 @@ CREATE TABLE `tasks` (
   `user_id` int(11) not null,
   `title` varchar(200) not null,
   `description` text,
-  `done` tinyint(1) not null default 0,
   `type` int(11) not null,
   `amount` int(11),
   `created_at` datetime not null
@@ -26,6 +25,7 @@ CREATE TABLE `records` (
   `user_id` int(11) not null,
   `target_date` datetime not null,
   `task_id` int(11) not null,
+  `done` tinyint(1) not null default 0,
   `amount` int(11),
   `created_at` datetime not null
 ) DEFAULT CHARSET=utf8;

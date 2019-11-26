@@ -16,6 +16,7 @@ type Record struct {
 	TargetDate time.Time `json:"target_date" gorm:"not null"`
 	TaskID     int       `json:"-" gorm:"not null"`
 	Task       Task      `json:"-"`
+	Done       bool      `json:"done" gorm:"not null;default 0"`
 	Amount     int       `json:"amount"`
 	CreatedAt  time.Time `json:"created_at" gorm:"not null"`
 }
@@ -47,6 +48,11 @@ func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) 
 		TargetDate: targetDate,
 		Task:       task,
 		CreatedAt:  time.Now(),
+	}
+	if json.Done == nil {
+		record.Done = false
+	} else {
+		record.Done = *json.Done
 	}
 	if json.Amount == nil {
 		record.Amount = 0

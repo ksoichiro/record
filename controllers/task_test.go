@@ -62,7 +62,7 @@ func TestTaskUpdateSuccessfully(t *testing.T) {
 	db := db.GetDB()
 	db.AutoMigrate(&models.User{}, &models.Task{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
-	db.Create(&models.Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Done: false, Type: 0, Amount: 0, CreatedAt: time.Now()})
+	db.Create(&models.Task{ID: 200, UserID: 100, Title: "task1", Description: "task description", Type: 0, Amount: 0, CreatedAt: time.Now()})
 	router.Use(func(c *gin.Context) {
 		c.Set("user", 100)
 	})
@@ -84,8 +84,8 @@ func TestTaskList(t *testing.T) {
 	db.AutoMigrate(&models.User{}, &models.Task{})
 	db.Create(&models.User{ID: 100, Name: "foo", Password: "$2a$10$FgKFrUubZOpRwPT9D5p9XuOjCYhPv7eCQwzdQKFJWTQsC9tXAuMG2" /* test */, CreatedAt: time.Now()})
 	tasks := []models.Task{
-		models.Task{ID: 200, UserID: 100, Title: "task1", Done: false, Type: 0, CreatedAt: time.Now()},
-		models.Task{ID: 201, UserID: 100, Title: "task2", Done: false, Type: 0, CreatedAt: time.Now()},
+		models.Task{ID: 200, UserID: 100, Title: "task1", Type: 0, CreatedAt: time.Now()},
+		models.Task{ID: 201, UserID: 100, Title: "task2", Type: 0, CreatedAt: time.Now()},
 	}
 	for _, v := range tasks {
 		db.Create(&v)

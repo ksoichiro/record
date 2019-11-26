@@ -71,9 +71,6 @@ func (t TaskController) Update(c *gin.Context) {
 	if json.Description != nil {
 		task.Description = *json.Description
 	}
-	if json.Done != nil {
-		task.Done = *json.Done
-	}
 	if json.Type != nil {
 		task.Type = *json.Type
 	}
