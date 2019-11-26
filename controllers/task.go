@@ -48,36 +48,20 @@ func (t TaskController) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	db := db.GetDB()
 	userID, exists := c.Get("user")
 	if !exists {
 		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
-	tx := db.Begin()
-	var user models.User
-	tx.Where("id = ?", userID).Find(&user)
-	var task models.Task
-	var count int
-	tx.Where("id = ? and user_id = ?", *json.ID, userID).First(&task).Count(&count)
-	if count == 0 {
-		tx.Rollback()
-		c.JSON(http.StatusOK, gin.H{"error": "task not found"})
+	var task *models.Task
+	var err error
+	if task, err = models.FindTask(*json.ID, userID.(int)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if json.Title != nil {
-		task.Title = *json.Title
+	if err := task.Update(&json); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	if json.Description != nil {
-		task.Description = *json.Description
-	}
-	if json.Type != nil {
-		task.Type = *json.Type
-	}
-	if json.Amount != nil {
-		task.Amount = *json.Amount
-	}
-	tx.Save(&task)
-	tx.Commit()
 	c.JSON(http.StatusOK, gin.H{"message": "updated"})
 }

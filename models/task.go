@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/ksoichiro/record/db"
@@ -44,4 +45,44 @@ func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
 	tx.Create(&task)
 	tx.Commit()
 	return &task, nil
+}
+
+// FindTask finds the task specified by ID and owned by the user.
+func FindTask(id int, userID int) (*Task, error) {
+	db := db.GetDB()
+	var task Task
+	var count int
+	db.Where("id = ? and user_id = ?", id, userID).First(&task).Count(&count)
+	if count == 0 {
+		return nil, fmt.Errorf("task not found")
+	}
+	return &task, nil
+}
+
+// Update updates the existing task.
+func (t Task) Update(json *forms.TaskUpdateForm) error {
+	db := db.GetDB()
+	tx := db.Begin()
+	var task Task
+	var count int
+	tx.Where("id = ? and user_id = ?", t.ID, t.UserID).First(&task).Count(&count)
+	if count == 0 {
+		tx.Rollback()
+		return fmt.Errorf("task not found")
+	}
+	if json.Title != nil {
+		task.Title = *json.Title
+	}
+	if json.Description != nil {
+		task.Description = *json.Description
+	}
+	if json.Type != nil {
+		task.Type = *json.Type
+	}
+	if json.Amount != nil {
+		task.Amount = *json.Amount
+	}
+	tx.Save(&task)
+	tx.Commit()
+	return nil
 }
