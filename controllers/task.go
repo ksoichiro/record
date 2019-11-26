@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ksoichiro/record/db"
 	"github.com/ksoichiro/record/forms"
 	"github.com/ksoichiro/record/models"
 )
@@ -14,14 +13,12 @@ type TaskController struct{}
 
 // List returns the tasks of the user.
 func (t TaskController) List(c *gin.Context) {
-	db := db.GetDB()
 	userID, exists := c.Get("user")
 	if !exists {
 		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
-	tasks := []models.Task{}
-	db.Where("user_id = ?", userID).Find(&tasks)
+	tasks := models.ListTasks(userID.(int))
 	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
 }
 

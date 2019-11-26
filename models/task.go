@@ -47,6 +47,14 @@ func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
 	return &task, nil
 }
 
+// ListTasks gets the tasks by user ID.
+func ListTasks(userID int) []Task {
+	db := db.GetDB()
+	tasks := []Task{}
+	db.Where("user_id = ?", userID).Find(&tasks)
+	return tasks
+}
+
 // FindTask finds the task specified by ID and owned by the user.
 func FindTask(id int, userID int) (*Task, error) {
 	db := db.GetDB()
