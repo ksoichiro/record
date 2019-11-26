@@ -22,11 +22,7 @@ type Record struct {
 }
 
 // NewRecord creates a new record object and persist it to the database.
-func NewRecord(json *forms.RecordCreateForm, userID int, targetDateExpr string) (*Record, error) {
-	targetDate, err := time.Parse("2006-01-02", targetDateExpr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse date")
-	}
+func NewRecord(json *forms.RecordCreateForm, userID int, targetDate time.Time) (*Record, error) {
 	db := db.GetDB()
 	tx := db.Begin()
 	var user User

@@ -23,8 +23,7 @@ func TestNewRecord(t *testing.T) {
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
-	targetDateExpr := "2019-11-20"
-	record, err := NewRecord(&form, userID, targetDateExpr)
+	record, err := NewRecord(&form, userID, mustParse("2006-01-02", "2019-11-20"))
 	assert.Nil(t, err)
 	assert.Equal(t, 100, record.User.ID)
 	assert.Equal(t, 200, record.Task.ID)
@@ -39,16 +38,6 @@ func TestNewRecord(t *testing.T) {
 	assert.Equal(t, "2019-11-20", records[0].TargetDate.Format("2006-01-02"))
 }
 
-func TestNewRecordFailsDueToInvalidDate(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	form := forms.RecordCreateForm{TaskID: new(int)}
-	*form.TaskID = 200
-	userID := 100
-	targetDateExpr := "2019.11.20"
-	_, err := NewRecord(&form, userID, targetDateExpr)
-	assert.Equal(t, "failed to parse date", err.Error())
-}
-
 func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	config.Init("test")
@@ -60,8 +49,7 @@ func TestNewRecordFailsDueToTaskNotFound(t *testing.T) {
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
-	targetDateExpr := "2019-11-20"
-	_, err := NewRecord(&form, userID, targetDateExpr)
+	_, err := NewRecord(&form, userID, mustParse("2006-01-02", "2019-11-20"))
 	assert.Equal(t, "task not found", err.Error())
 }
 
@@ -76,10 +64,9 @@ func TestNewRecordFailsWhenAlreadyCreated(t *testing.T) {
 	form := forms.RecordCreateForm{TaskID: new(int)}
 	*form.TaskID = 200
 	userID := 100
-	targetDateExpr := "2019-11-20"
-	_, err := NewRecord(&form, userID, targetDateExpr)
+	_, err := NewRecord(&form, userID, mustParse("2006-01-02", "2019-11-20"))
 	assert.Nil(t, err)
-	_, err = NewRecord(&form, userID, targetDateExpr)
+	_, err = NewRecord(&form, userID, mustParse("2006-01-02", "2019-11-20"))
 	assert.Equal(t, "already created", err.Error())
 }
 

@@ -148,7 +148,7 @@ func TestRecordListValidationErrorInvalidDateFormat(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/100", nil)
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 400, w.Code, w.Body.String())
-	assert.Equal(t, `{"error":"invalid date"}`, strings.TrimRight(w.Body.String(), "\n"))
+	assert.Equal(t, `{"error":"parsing time \"100\" as \"2006-01-02\": cannot parse \"100\" as \"2006\""}`, strings.TrimRight(w.Body.String(), "\n"))
 }
 
 func TestRecordListValidationErrorUserNotFound(t *testing.T) {
