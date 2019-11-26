@@ -57,7 +57,7 @@ func (r RecordController) Create(c *gin.Context) {
 }
 
 // Update updates the user's record.
-func (t RecordController) Update(c *gin.Context) {
+func (r RecordController) Update(c *gin.Context) {
 	var json forms.RecordUpdateForm
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

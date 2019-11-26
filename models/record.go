@@ -68,7 +68,7 @@ func ListRecords(userID int, targetDate time.Time) []Record {
 	return records
 }
 
-// FindTask finds the record specified by ID and owned by the user.
+// FindRecord finds the record specified by ID and owned by the user.
 func FindRecord(id int, userID int) (*Record, error) {
 	db := db.GetDB()
 	var record Record
