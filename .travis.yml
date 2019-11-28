@@ -6,11 +6,13 @@ matrix:
       cache:
         directories:
           - $GOPATH/pkg/mod
+      before_install:
+        - cd api
       install:
-        - cd api && make install
+        - make install
       script:
-        - cd api && make lint
-        - cd api && make test
+        - make lint
+        - make test
     - language: node_js
       node_js:
         - '10'
@@ -18,6 +20,7 @@ matrix:
         directories:
           - web/node_modules
       before_install:
-        - cd web && npm install -g npm@latest
+        - cd web
+        - npm install -g npm@latest
       script:
         - npm test
