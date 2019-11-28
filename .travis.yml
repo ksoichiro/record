@@ -1,15 +1,13 @@
-language: go
-
-go:
-  - 1.12
-
-cache:
-  directories:
-    - $GOPATH/pkg/mod
-
-install:
-  - make install
-
-script:
-  - make lint
-  - make test
+matrix:
+  include:
+    - language: go
+      go:
+        - 1.12
+      cache:
+        directories:
+          - $GOPATH/pkg/mod
+      install:
+        - cd api && make install
+      script:
+        - cd api && make lint
+        - cd api && make test

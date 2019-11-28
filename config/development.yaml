@@ -1,9 +1,0 @@
-database:
-  dialect: mysql
-  url: app:app@tcp(127.0.0.1:3306)/test?parseTime=true&loc=Asia%2FTokyo
-server:
-  port: 8080
-auth:
-  keys:
-    private: ./jwtRS256.key
-    public: ./jwtRS256.key.pub.pkcs8
