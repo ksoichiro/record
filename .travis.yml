@@ -11,3 +11,13 @@ matrix:
       script:
         - cd api && make lint
         - cd api && make test
+    - language: node_js
+      node_js:
+        - '10'
+      cache:
+        directories:
+          - web/node_modules
+      before_install:
+        - cd web && npm install -g npm@latest
+      script:
+        - npm test
