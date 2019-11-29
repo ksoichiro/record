@@ -21,12 +21,19 @@ type Task struct {
 }
 
 // NewTask creates a new task and persist it to the database.
-func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
+func NewTask(json *forms.TaskCreateForm, userID int) (task *Task, err error) {
 	db := db.GetDB()
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			task = nil
+			err = fmt.Errorf("failed to create task")
+		}
+	}()
 	var user User
 	tx.Where("id = ?", userID).Find(&user)
-	task := Task{
+	task = &Task{
 		User:        user,
 		Title:       json.Title,
 		Description: json.Description,
@@ -42,9 +49,15 @@ func NewTask(json *forms.TaskCreateForm, userID int) (*Task, error) {
 	} else {
 		task.Amount = *json.Amount
 	}
-	tx.Create(&task)
-	tx.Commit()
-	return &task, nil
+	if err = tx.Create(&task).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err = tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	return task, nil
 }
 
 // ListTasks gets the tasks by user ID.
