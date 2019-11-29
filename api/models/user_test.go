@@ -56,7 +56,7 @@ func TestNewUserErrorDuplicateEntry(t *testing.T) {
 	assert.Equal(t, "foo", users[0].Name)
 	assert.NotEmpty(t, users[0].Password)
 	assert.GreaterOrEqual(t, time.Now().Unix(), users[0].CreatedAt.Unix())
-	user, err = NewUser(&form)
+	_, err = NewUser(&form)
 	assert.NotNil(t, err)
 	db.Find(&users).Count(&count)
 	assert.Equal(t, 1, count)
