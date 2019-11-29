@@ -22,25 +22,40 @@ type Record struct {
 }
 
 // NewRecord creates a new record object and persist it to the database.
-func NewRecord(json *forms.RecordCreateForm, userID int, targetDate time.Time) (*Record, error) {
+func NewRecord(json *forms.RecordCreateForm, userID int, targetDate time.Time) (record *Record, err error) {
 	db := db.GetDB()
 	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			record = nil
+			err = fmt.Errorf("failed to create record")
+		}
+	}()
 	var user User
-	tx.Where("id = ?", userID).Find(&user)
+	if err = tx.Where("id = ?", userID).Find(&user).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 	var task Task
 	var count int
-	tx.Where("id = ? and user_id = ?", *json.TaskID, userID).First(&task).Count(&count)
+	if err = tx.Where("id = ? and user_id = ?", *json.TaskID, userID).First(&task).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 	if count == 0 {
 		tx.Rollback()
 		return nil, fmt.Errorf("record not found")
 	}
+	if err = tx.Model(&Record{}).Where("user_id = ? and target_date = ? and task_id = ?", userID, targetDate, json.TaskID).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return nil, err
 	}
-	tx.Model(&Record{}).Where("user_id = ? and target_date = ? and task_id = ?", userID, targetDate, json.TaskID).Count(&count)
 	if 0 < count {
 		tx.Rollback()
 		return nil, fmt.Errorf("already created")
 	}
-	record := Record{
+	record = &Record{
 		User:       user,
 		TargetDate: targetDate,
 		Task:       task,
@@ -56,9 +71,15 @@ func NewRecord(json *forms.RecordCreateForm, userID int, targetDate time.Time) (
 	} else {
 		record.Amount = *json.Amount
 	}
-	tx.Create(&record)
-	tx.Commit()
-	return &record, nil
+	if err = tx.Create(&record).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err = tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	return record, nil
 }
 
 // ListRecords gets the records by user ID and the specified date.
