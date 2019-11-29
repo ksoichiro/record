@@ -34,7 +34,7 @@ func NewUser(json *forms.UserCreateForm) (user *User, err error) {
 		if r := recover(); r != nil {
 			tx.Rollback()
 			user = nil
-			err = db.Error
+			err = fmt.Errorf("failed to create user")
 		}
 	}()
 	user = &User{Name: name, Password: password, CreatedAt: time.Now()}
