@@ -32,7 +32,8 @@ func NewRecord(json *forms.RecordCreateForm, userID int, targetDate time.Time) (
 	tx.Where("id = ? and user_id = ?", *json.TaskID, userID).First(&task).Count(&count)
 	if count == 0 {
 		tx.Rollback()
-		return nil, fmt.Errorf("task not found")
+		return nil, fmt.Errorf("record not found")
+	}
 	}
 	tx.Model(&Record{}).Where("user_id = ? and target_date = ? and task_id = ?", userID, targetDate, json.TaskID).Count(&count)
 	if 0 < count {
