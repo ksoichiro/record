@@ -5,6 +5,7 @@
       <input type="password" id="password" v-model="password" placeholder="Password" />
       <button type="submit">Login</button>
     </form>
+    <div><router-link to="/signup">Sign up</router-link></div>
   </div>
 </template>
 
