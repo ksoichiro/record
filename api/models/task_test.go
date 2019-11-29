@@ -118,6 +118,6 @@ func TestTaskUpdateErrorTaskNotFound(t *testing.T) {
 	err := task.Update(&form)
 	assert.Equal(t, "task not found", err.Error())
 	var count int
-	db.Where("id = 200").Count(&count)
+	db.Model(&Task{}).Where("id = 200").Count(&count)
 	assert.Equal(t, 0, count)
 }
