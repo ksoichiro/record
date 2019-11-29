@@ -35,6 +35,33 @@ func TestNewUser(t *testing.T) {
 	assert.GreaterOrEqual(t, time.Now().Unix(), users[0].CreatedAt.Unix())
 }
 
+func TestNewUserErrorDuplicateEntry(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	config.Init("test")
+	db.Init()
+	db := db.GetDB()
+	db.AutoMigrate(&User{})
+	form := forms.UserCreateForm{
+		Name:     "foo",
+		Password: "test",
+	}
+	user, err := NewUser(&form)
+	assert.Nil(t, err)
+	assert.Equal(t, "foo", user.Name)
+	var users []User
+	var count int
+	db.Find(&users).Count(&count)
+	assert.Equal(t, 1, count)
+	assert.Equal(t, 1, users[0].ID)
+	assert.Equal(t, "foo", users[0].Name)
+	assert.NotEmpty(t, users[0].Password)
+	assert.GreaterOrEqual(t, time.Now().Unix(), users[0].CreatedAt.Unix())
+	user, err = NewUser(&form)
+	assert.NotNil(t, err)
+	db.Find(&users).Count(&count)
+	assert.Equal(t, 1, count)
+}
+
 func TestUserLogin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	config.Init("test")

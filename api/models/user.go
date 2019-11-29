@@ -21,7 +21,7 @@ type User struct {
 }
 
 // NewUser creates a new user and persist it to the database.
-func NewUser(json *forms.UserCreateForm) (*User, error) {
+func NewUser(json *forms.UserCreateForm) (user *User, err error) {
 	name := json.Name
 	hash, err := bcrypt.GenerateFromPassword([]byte(json.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -30,10 +30,23 @@ func NewUser(json *forms.UserCreateForm) (*User, error) {
 	password := string(hash)
 	db := db.GetDB()
 	tx := db.Begin()
-	user := User{Name: name, Password: password, CreatedAt: time.Now()}
-	tx.Create(&user)
-	tx.Commit()
-	return &user, nil
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			user = nil
+			err = db.Error
+		}
+	}()
+	user = &User{Name: name, Password: password, CreatedAt: time.Now()}
+	if err = tx.Create(&user).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	if err = tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+	return user, nil
 }
 
 // Login authenticates the user with the credentials specified by the form.
