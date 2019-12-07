@@ -1,12 +1,12 @@
 const auth = {
   loggedIn: false,
   login: function (token) {
-    localStorage.token = token
+    localStorage.setItem('token', token)
     this.loggedIn = true
   },
   logout: function () {
     this.loggedIn = false
-    delete localStorage.token
+    localStorage.removeItem('token')
   }
 }
 

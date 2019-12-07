@@ -38,7 +38,7 @@ func UserAuthenticator() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("user", claims["sub"])
+		c.Set("user", int(claims["sub"].(float64)))
 		c.Next()
 	}
 }
