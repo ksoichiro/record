@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"crypto/rsa"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,11 +9,6 @@ import (
 	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gin-gonic/gin"
 	"github.com/ksoichiro/record/api/config"
-)
-
-var (
-	verifyKey *rsa.PublicKey
-	signKey   *rsa.PrivateKey
 )
 
 // UserAuthenticator is a middleware to validate that the requests

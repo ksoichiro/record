@@ -34,7 +34,10 @@ func (t TaskController) Create(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "user not found"})
 		return
 	}
-	models.NewTask(&json, userID.(int))
+	if _, err := models.NewTask(&json, userID.(int)); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "created"})
 }
 
