@@ -13,9 +13,10 @@ docker-compose up -d
 docker-compose exec db bash -c "mysql -uroot -p test"
 ```
 
-## App
+## API
 
 ```sh
+cd api
 go run main.go
 ```
 
