@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "css:scss": "node-sass src/scss/style.scss assets/css/style.css",
+    "css:postcss": "postcss assets/css/style.css -u autoprefixer -o assets/css/style.css",
+    "css": "run-s css:*",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test": "npm run lint"
@@ -11,6 +14,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "core-js": "^3.4.3",
+    "milligram": "^1.3.0",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3"
   },
@@ -18,9 +22,14 @@
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
+    "autoprefixer": "^9.7.3",
     "babel-eslint": "^10.0.3",
+    "cssnano": "^4.1.10",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "node-sass": "^4.13.0",
+    "npm-run-all": "^4.1.5",
+    "postcss-cli": "^6.1.3",
     "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
