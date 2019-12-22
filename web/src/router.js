@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Ping from './components/Ping.vue'
-import Login from './components/Login.vue'
-import Home from './components/Home.vue'
-import Logout from './components/Logout.vue'
-import SignUp from './components/SignUp.vue'
-import auth from './auth'
+import Ping from '~/src/components/Ping.vue'
+import Login from '~/src/components/Login.vue'
+import Home from '~/src/components/Home.vue'
+import Logout from '~/src/components/Logout.vue'
+import SignUp from '~/src/components/SignUp.vue'
+import auth from '~/src/auth'
 
 Vue.use(VueRouter)
 
