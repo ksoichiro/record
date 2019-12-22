@@ -9,6 +9,7 @@ matrix:
       before_install:
         - cd api
       install:
+        - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.21.0
         - make install
       script:
         - make lint

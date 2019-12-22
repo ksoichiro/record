@@ -18,8 +18,8 @@ func adminUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
-// NewRouter creates and sets up a new router for 'gin'.
-func NewRouter() *gin.Engine {
+// newRouter creates and sets up a new router for 'gin'.
+func newRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.GET("/ping", func(c *gin.Context) {
